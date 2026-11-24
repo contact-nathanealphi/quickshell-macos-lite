@@ -39,7 +39,7 @@ All original theme architecture, base QML components, shaders, and assets belong
 - **Roman Numeral Workspace Switcher (`I–V`):**
   - Hovering or clicking opens the workspace picker (works even when media is playing); scrolling with the mouse wheel on either the pill or popup switches Hyprland workspaces (`-1` / `+1`).
 - **ArchLinux AI Chat (`>_` Terminal Icon):**
-  - Integrated mini AI chat room powered by `agy -p` / `agy -c -p` with Markdown rendering and clean iMessage-style bubbles.
+  - Integrated mini AI chat room powered by `agy -p` / `agy -c -p` by default, with Markdown rendering and clean iMessage-style bubbles (**adaptable to any other AI CLI** such as `gemini`, `claude`, `codex`, or `ollama`—see [Requirements & Setup](#requirements--setup)).
   - **`/resume` & History Picker:** Lists recent sessions by their first prompt and timestamp, and reloads previous conversation messages from `transcript.jsonl`.
   - **macOS Traffic Lights (`-`, `=`, `o`):**
     - **Red (`-`):** Close the chat popup.
