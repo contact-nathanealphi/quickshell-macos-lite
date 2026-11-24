@@ -33,7 +33,7 @@ All original theme architecture, base QML components, shaders, and assets belong
 ## Custom Modifications & Features
 
 ### 1. Dynamic Island Wannabe (`modules/topbar/DynamicIsland.qml`)
-> *Note: Not a 1:1 Apple Dynamic Island clone—just a compact floating command pill tailored for a **tiling-WM + CLI-first workflow**. Unlike desktop GUI apps where opening a second chat tab is trivial, CLI agents (`agy`, `claude`, `codex`, `gemini`) occupy a tiled terminal pane. Having a pinnable overlay AI scratchpad in the top bar lets you run quick queries, `/resume` past sessions, or draft plans **without splitting your tiled layout or leaving your active terminal**, and pop out to a full terminal session anytime.*
+> *Note: Not a 1:1 Apple Dynamic Island clone—just a compact floating command pill tailored for a **tiling-WM + CLI-first workflow**. Unlike heavy Electron/desktop GUI apps where opening a second chat tab consumes hundreds of MBs of RAM, CLI agents (`agy`, `claude`, `codex`, `gemini`) run lightweight directly in the terminal. Having a pinnable overlay AI scratchpad in the top bar gives you that fast, low-memory CLI advantage—letting you run quick queries, `/resume` past sessions, or draft plans **without splitting your tiled layout or spinning up a heavy desktop app**, and pop out to a full terminal session anytime.*
 - **Native Launchpad App Launcher (`3×3` Grid Icon):**
   - Hovering or clicking opens a compact 4-column macOS glass app grid backed by `Apps.qml` with live search, `Enter` to launch, `Esc` to close, optional **Rofi** shortcut, and instant auto-close when the cursor leaves.
 - **Roman Numeral Workspace Switcher (`I–V`):**
