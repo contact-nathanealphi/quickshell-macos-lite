@@ -1,0 +1,77 @@
+{
+    "accentColor": "#0A6CFF",
+    "appearance": {
+        "accentName": "blue",
+        "highlightName": "#0A6CFF",
+        "scrollBars": "When scrolling",
+        "sidebarIconSize": "Medium"
+    },
+    "avatarPath": "/home/nathanealphi/.local/share/systemsettings/avatar-1790780655549.png",
+    "bar": {
+        "showBackground": false
+    },
+    "battery": {
+        "displayOff": "Never",
+        "lowPower": "Never",
+        "modeAdapter": "High Power",
+        "modeBattery": "Low Power"
+    },
+    "darkMode": true,
+    "dock": {
+        "titleBarAction": "Minimize"
+    },
+    "dockAnimateHide": true,
+    "dockAutohide": true,
+    "dockIconSize": 38,
+    "dockIndicators": true,
+    "dockMagnification": false,
+    "dockPosition": "bottom",
+    "dockShowAnimation": false,
+    "dockZoom": 16,
+    "folderColor": "",
+    "highlightColor": "#0A6CFF",
+    "hotCorners": {
+        "bl": "-",
+        "br": "-",
+        "tl": "-",
+        "tr": "-"
+    },
+    "iconStyle": "Default",
+    "iconStyleMode": "Always",
+    "iconTint": "#0D3570",
+    "liquidGlass": "Clear",
+    "liquidGlassIntensity": 0,
+    "menubar": {
+        "battery": true,
+        "bluetooth": true,
+        "clock": true,
+        "controlcenter": true,
+        "display": true,
+        "enabledApps": "ChatGPTHelper|DockFlow|Elgato Stream Deck|LookAway|Notion Calendar|PastePal|Rize|Substage|Umbra|Creative Cloud",
+        "mirror": false,
+        "siri": false,
+        "sound": true,
+        "spotlight": true,
+        "timeMachine": true,
+        "tray": true,
+        "weather": true,
+        "wifi": true
+    },
+    "menubarBattery": true,
+    "menubarBluetooth": true,
+    "menubarClock": true,
+    "menubarDisplay": true,
+    "menubarSpotlight": true,
+    "menubarTray": true,
+    "menubarWifi": true,
+    "pages": {
+        "notifications": {
+            "summarize_notifications": true
+        }
+    },
+    "reduceMotion": true,
+    "spotlightEnable": true,
+    "wallpaper": {
+        "allSpaces": true
+    }
+}
