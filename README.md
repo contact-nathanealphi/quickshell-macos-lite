@@ -26,13 +26,14 @@ All original theme architecture, base QML components, shaders, and assets belong
   - App icons and media cover art use `cache: false` and bounded `GridView` `cacheBuffer` so decoded bitmaps are not retained in memory after closing popups.
   - Replaced heavy transparent/liquid-glass surfaces in popups with crisp, readable dark-glass panels (`100%` opaque Spotlight for legibility).
 - **Removed Unneeded Background Polling & Modules:**
-  - Removed the `A` / `ع` keyboard layout switcher (which polled `hyprctl` + `python3` every second), removed the duplicate Dynamic Island notification bell, and disabled Spotlight's in-memory clipboard history mode.
+  - Removed the `A` / `ع` keyboard layout switcher (which polled `hyprctl` + `python3` every second), removed the duplicate pill notification bell, and disabled Spotlight's in-memory clipboard history mode.
 
 ---
 
 ## Custom Modifications & Features
 
-### 1. Dynamic Island (`modules/topbar/DynamicIsland.qml`)
+### 1. Dynamic Island Wannabe (`modules/topbar/DynamicIsland.qml`)
+> *Note: It's not a 1:1 Apple Dynamic Island clone—it's just a compact floating command pill built around what's actually useful on a daily workflow. Having a quick AI chat/planner right in the bar lets me keep **2 AIs in one workspace (Planner + Executor)** without switching workspaces or opening two separate apps/tabs.*
 - **Native Launchpad App Launcher (`3×3` Grid Icon):**
   - Hovering or clicking opens a compact 4-column macOS glass app grid backed by `Apps.qml` with live search, `Enter` to launch, `Esc` to close, optional **Rofi** shortcut, and instant auto-close when the cursor leaves.
 - **Roman Numeral Workspace Switcher (`I–V`):**
