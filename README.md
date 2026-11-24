@@ -23,25 +23,25 @@ Measured on **Arch Linux (Hyprland 0.56.2, 1920×1080, AMD Radeon Lucienne, 7.1 
 
 | State | `quickshell` RSS | Idle Wayland Layers | Notes |
 | :--- | ---: | :--- | :--- |
-| **Before Optimization** (original preloaded shell) | **694.8 MiB** (9.5%) | `macos:topbar`, `macos:dock`, `eqsh:spotlight` (1920×1038) | Fullscreen Spotlight layer & Control Center stayed alive 24/7; app icons & cover art accumulated in `QPixmapCache`. |
-| **After Optimization** (this Lightweight Edition) | **620.2 MiB** (8.4%) | `macos:topbar`, `macos:dock` | **~74.6 MiB saved at idle.** Fullscreen Spotlight layer is completely unmapped when closed; heavy overlays load on demand and call `gc()` on close. |
+| **Before Optimization** (original preloaded shell) | **694.8 MiB** (9.5%) | `macos:topbar`, `macos:dock`, `eqsh:spotlight` (1920×1038) | Fullscreen Spotlight layer & Control Center stayed alive 24/7; GPU `ShaderEffect`/`MultiEffect` loaded Mesa LLVM (~124 MiB) + GPU buffers. |
+| **After Optimization** (this Lightweight Edition) | **291.5 MiB** (3.9%) | `macos:topbar`, `macos:dock` | **~403.3 MiB saved (-58% RAM at idle!).** Pure-QML frosted glass (`QT_QUICK_BACKEND=software` + `MALLOC_ARENA_MAX=2`), lazy-loaded overlays + `gc()`, and no idle fullscreen layer. |
 
-> **Honest breakdown:** Roughly ~124 MiB of the remaining RSS is shared AMD Mesa/LLVM GPU driver & shader compiler libraries (`libLLVM.so` + `libgallium`), alongside QtQuick/QML runtime, SF Pro fonts, and the always-visible TopBar + Dock liquid-glass surfaces.
+> **What remains in ~291.5 MiB:** Qt6/QtQuick runtime, SF Pro fonts, Wayland compositor surfaces, and the always-visible TopBar + Dock icon assets—with zero GPU shader compiler (`libLLVM.so` / `libgallium`) bloat.
 
 ### How the Footprint Was Reduced
 1. **On-Demand Lazy Loading (`shell.qml`, `ControlCenter.qml`, `DynamicIsland.qml`):**
    - **Spotlight**, **Control Center** (1,391 lines of Bluetooth/PipeWire/Glass UI), **Lock Screen**, **Session Menu**, **ConfirmDialog**, **ForceQuit**, **App Launcher Grid**, and **AI Chat** are wrapped in `Loader` / `LazyLoader`.
    - Overlays only allocate memory when opened, keep a short `300–400ms` grace window for close animations to finish, and immediately unload + trigger `gc()`.
    - Removed eager `Apps.ready` preloading on shell startup.
-2. **Bounded Texture & Image Caching:**
-   - Disabled persistent `QPixmapCache` retention (`cache: false`) on app launcher icons and MPRIS media cover art so decoded bitmaps are freed when popups close.
-   - Bounded `GridView` `cacheBuffer: 84` (1 off-screen row) in the App Launcher.
+2. **Zero GPU Shader Bloat & Bounded Texture Caching (`DockGlass.qml`, `Dock.qml`, `DynamicIsland.qml`):**
+   - Replaced heavy `ShaderEffect` (`grxframe.frag.qsb`) and `MultiEffect` offscreen FBOs in the Dock with pure-QML frosted glass `Rectangle`s (preserving the macOS translucent look, top sheen, and 1px rim highlight without triggering Mesa/LLVM shader compilation).
+   - Disabled persistent `QPixmapCache` retention (`cache: false`) on app launcher icons and MPRIS media cover art, and bounded `GridView` `cacheBuffer: 84` (1 off-screen row).
 3. **Eliminated Wasted Background Work:**
    - Removed the `A` / `ع` keyboard layout switcher from `TopBar.qml` (which spawned `hyprctl` + `python3` every 1 second).
    - Removed the duplicate notification bell & popup from the center pill (centralized into TopBar's Notification Center).
    - Removed Spotlight's in-memory clipboard history mode so copied text/images aren't duplicated in shell RAM.
-4. **Heap Fragmentation Control:**
-   - Recommended launch with `MALLOC_ARENA_MAX=2` to prevent glibc multi-arena heap bloat across Qt/Mesa worker threads.
+4. **Software Renderer & Heap Tuning:**
+   - Launching with `QT_QUICK_BACKEND=software MALLOC_ARENA_MAX=2` bypasses the ~124 MiB Mesa/LLVM GPU driver overhead and prevents glibc multi-arena heap bloat across worker threads.
 
 ---
 
@@ -73,8 +73,9 @@ Measured on **Arch Linux (Hyprland 0.56.2, 1920×1080, AMD Radeon Lucienne, 7.1 
 ### 2. TopBar, Notification Center & System Tray (`modules/topbar/TopBar.qml`, `eqsh/TrayMenu.qml`, `eqsh/SysTrayItem.qml`)
 - **Hover Auto-Open with 600ms Grace Delay:**
   - **Battery**, **Wi-Fi**, and **Clock / Notification Center** popups open automatically on hover and use a shared `600ms` `rightBarCloseTimer` + popup `HoverHandler`s so the cursor has plenty of time to travel from the bar into the menu before auto-closing.
-- **Live Battery Percentage:**
+- **Live Battery & Functional Wi-Fi Picker:**
   - Added `Math.round(Battery.percentage * 100) + "%"` directly next to the SVG battery icon in the TopBar.
+  - Replaced the static Wi-Fi placeholder items (`Privacy Warning…`, `Other Networks ▶`) with live connection status, a scrollable **Available Networks** list (`Network.wifiNetworks` + click to connect), and a **Wi-Fi Settings...** shortcut.
 - **Fixed Notification Center:**
   - Fixed a theme bug where notification cards inside `Column` used `Layout.fillWidth: true` without `width`, causing every notification card to render at `width: 0` (invisible even when `"Clear All"` was visible).
   - Synced initial history with `Notifications.recent` on startup and replaced the overly transparent background with a readable dark-glass panel (`rgba(0.10, 0.10, 0.14, 0.92)`).
@@ -110,9 +111,9 @@ The **ArchLinux AI Chat** popup inside the Dynamic Island Wannabe is **not a bui
    ```bash
    pkill -x swaync 2>/dev/null || true
    ```
-3. Launch Quickshell with `MALLOC_ARENA_MAX=2` to keep glibc heap usage low:
+3. Launch Quickshell with `QT_QUICK_BACKEND=software` and `MALLOC_ARENA_MAX=2` to achieve the ~291 MiB lightweight footprint:
    ```bash
-   MALLOC_ARENA_MAX=2 quickshell -p ~/.config/quickshell/macos
+   QT_QUICK_BACKEND=software MALLOC_ARENA_MAX=2 quickshell -p ~/.config/quickshell/macos
    ```
 4. *(Optional)* Add a Hyprland window rule (`~/.config/hypr/configs/windowrule.lua`) so the pinned AI Chat (`=` yellow button) floats cleanly across all workspaces:
    ```lua

@@ -21,18 +21,24 @@ Item {
     readonly property real smallerVal: Math.min(width, height)
     readonly property real r: Math.min(smallerVal / 2, radius)
 
-    ShaderEffect {
+    // Lightweight pure-QML frosted glass platter (zero ShaderEffect overhead)
+    Rectangle {
         anchors.fill: parent
-        property vector2d iResolution: Qt.vector2d(box.width + 2, box.height + 2)
-        property vector2d boxSize: Qt.vector2d(box.width / 2, box.height / 2)
-        property vector4d cornerRadii: Qt.vector4d(box.r, box.r, box.r, box.r)
-        property vector4d glowColor: Qt.vector4d(box.light.r, box.light.g, box.light.b, box.light.a * box.rimStrength)
-        property real glowEdgeBand: box.rimSize
-        property vector4d baseColor: Qt.vector4d(box.color.r, box.color.g, box.color.b, box.color.a)
-        property var source: null
-        property var lightDir: box.lightDir
-        fragmentShader: Qt.resolvedUrl(Quickshell.shellDir + "/media/shaders/grxframe.frag.qsb")
-        vertexShader: Qt.resolvedUrl(Quickshell.shellDir + "/media/shaders/grxframe.vert.qsb")
+        radius: box.radius
+        color: Qt.rgba(0.10, 0.10, 0.14, 0.58)
+        border.width: 1
+        border.color: Qt.rgba(box.light.r, box.light.g, box.light.b, Math.min(1.0, box.light.a * box.rimStrength * 2.0))
+        clip: true
+
+        Rectangle {
+            anchors { left: parent.left; right: parent.right; top: parent.top; margins: 1 }
+            height: parent.height * 0.45
+            radius: Math.max(0, box.radius - 1)
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.12) }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
     }
 
     // 1px dark line just outside the platter, on the background (as macOS)

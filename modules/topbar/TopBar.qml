@@ -1617,7 +1617,7 @@ PanelWindow {
                 RowLayout {
                     Layout.fillWidth: true
                     Text {
-                        text: "Wi\u2011Fi"
+                        text: "Wi-Fi"
                         font { family: Appearance.fontFamily; pixelSize: 15; weight: Font.Bold }
                         color: root.barFg; Layout.fillWidth: true
                     }
@@ -1641,38 +1641,19 @@ PanelWindow {
 
                 PopSep {}
 
-                // Privacy Warning
-                RowLayout {
-                    Layout.fillWidth: true; Layout.preferredHeight: 28
-                    Text {
-                        text: "Privacy Warning\u2026"
-                        font { family: Appearance.fontFamily; pixelSize: 13 }
-                        color: root.barFg; Layout.fillWidth: true
-                    }
-                    Text {
-                        text: "\u26A0"
-                        font { family: Appearance.fontFamily; pixelSize: 14 }
-                        color: "#ff9f0a"
-                    }
-                }
-
-                PopSep {}
-
-                // Known Network header
+                // Connected Network
                 Text {
-                    text: "Known Network"
+                    text: "Connected"
                     font { family: Appearance.fontFamily; pixelSize: 12; weight: Font.DemiBold }
                     color: root.barFgDim; Layout.fillWidth: true; Layout.topMargin: 2
                 }
 
-                // Current connected network
                 RowLayout {
                     Layout.fillWidth: true; Layout.preferredHeight: 28
                     spacing: 8
-                    // Blue WiFi icon
                     Rectangle {
                         width: 22; height: 22; radius: 11
-                        color: "#007aff"
+                        color: Network.wifiConnected ? "#007aff" : Qt.rgba(1, 1, 1, 0.14)
                         Layout.alignment: Qt.AlignVCenter
                         Image {
                             anchors.centerIn: parent; width: 14; height: 14
@@ -1681,32 +1662,81 @@ PanelWindow {
                         }
                     }
                     Text {
-                        text: Network.wifiSsid || "Unknown"
-                        font { family: Appearance.fontFamily; pixelSize: 13 }
+                        text: Network.wifiConnected ? (Network.wifiSsid || "Connected") : (Network.wifiOn ? "Not Connected" : "Wi-Fi Off")
+                        font { family: Appearance.fontFamily; pixelSize: 13; weight: Font.Medium }
                         color: root.barFg; Layout.fillWidth: true
                         elide: Text.ElideRight
-                    }
-                    Text {
-                        text: "\uD83D\uDD12"
-                        font { pixelSize: 12 }
-                        color: root.barFgDim
                     }
                 }
 
                 PopSep {}
 
-                // Other Networks
-                RowLayout {
-                    Layout.fillWidth: true; Layout.preferredHeight: 28
-                    Text {
-                        text: "Other Networks"
-                        font { family: Appearance.fontFamily; pixelSize: 13 }
-                        color: root.barFg; Layout.fillWidth: true
-                    }
-                    Text {
-                        text: "\u25B6"
-                        font { family: Appearance.fontFamily; pixelSize: 10 }
-                        color: root.barFgDim
+                // Available Networks
+                Text {
+                    text: "Available Networks"
+                    font { family: Appearance.fontFamily; pixelSize: 12; weight: Font.DemiBold }
+                    color: root.barFgDim; Layout.fillWidth: true; Layout.topMargin: 2
+                }
+
+                Flickable {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    contentHeight: wifiNetCol.implicitHeight
+                    boundsBehavior: Flickable.StopAtBounds
+
+                    ColumnLayout {
+                        id: wifiNetCol
+                        width: parent.width
+                        spacing: 2
+
+                        Text {
+                            visible: Network.wifiNetworks.length === 0
+                            text: Network.wifiOn ? "Scanning..." : "Turn on Wi-Fi to scan"
+                            font { family: Appearance.fontFamily; pixelSize: 12 }
+                            color: root.barFgDim
+                            Layout.topMargin: 8
+                        }
+
+                        Repeater {
+                            model: Network.wifiNetworks
+                            delegate: Rectangle {
+                                required property string modelData
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 28
+                                radius: 7
+                                color: netItemMa.containsMouse ? Appearance.fieldHover : "transparent"
+
+                                RowLayout {
+                                    anchors { fill: parent; leftMargin: 8; rightMargin: 8 }
+                                    spacing: 8
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: modelData
+                                        elide: Text.ElideRight
+                                        font { family: Appearance.fontFamily; pixelSize: 13 }
+                                        color: modelData === Network.wifiSsid ? "#64d2ff" : root.barFg
+                                    }
+                                    Text {
+                                        visible: modelData === Network.wifiSsid
+                                        text: "✓"
+                                        font { family: Appearance.fontFamily; pixelSize: 12; weight: Font.Bold }
+                                        color: "#64d2ff"
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: netItemMa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        Network.connectSsid(modelData);
+                                        root.wifiOpen = false;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -1714,7 +1744,7 @@ PanelWindow {
 
                 // Wi-Fi Settings
                 PopItem {
-                    label: "Wi\u2011Fi Settings\u2026"
+                    label: "Wi-Fi Settings..."
                     onClick: () => { root.wifiOpen = false; root.run("nm-connection-editor"); }
                 }
             }

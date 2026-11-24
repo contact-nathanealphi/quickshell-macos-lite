@@ -567,34 +567,14 @@ PanelWindow {
             color: glass.compositorGlass ? Qt.rgba(1, 1, 1, 0.012)
                  : Qt.rgba(glass.effTint.r, glass.effTint.g, glass.effTint.b, glass.effAlpha)
         }
-        // Liquid Glass highlight: light falls from the top edge and fades
-        // down the sides (SwiftUI Material.Layer.SDFLayer.GlassHighlight)
+        // Lightweight Liquid Glass highlight (no MultiEffect / offscreen FBO)
         Rectangle {
             visible: !glass.compositorGlass
             anchors.fill: parent
             radius: glass.radius
             color: "transparent"
             border.width: 1
-            border.color: Qt.rgba(1, 1, 1, 0.42)
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskSource: rimFade
-            }
-        }
-        Item {
-            id: rimFade
-            anchors.fill: parent
-            visible: false
-            layer.enabled: true
-            Rectangle {
-                anchors.fill: parent
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 1.0) }
-                    GradientStop { position: 0.45; color: Qt.rgba(1, 1, 1, 0.30) }
-                    GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 0.55) }
-                }
-            }
+            border.color: Qt.rgba(1, 1, 1, 0.24)
         }
         // soft inner sheen across the upper half
         Rectangle {
