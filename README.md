@@ -60,3 +60,39 @@ All original theme architecture, base QML components, shaders, and assets belong
   - **Applications (`Ctrl+1`):** Shows all desktop apps immediately when selected.
   - **Files (`Ctrl+2`):** Searches files and folders in `$HOME` (skipping `.git`, `node_modules`, `.cache`) and opens them via `xdg-open`.
   - **Actions (`Ctrl+3`):** Quick system actions (Terminal, Thunar, `btop`, Control Center, Notification Center, Screenshots, Wi-Fi/Audio/Bluetooth settings, Lock, Reload Quickshell, Sleep, Restart, Shutdown, Log Out) with real macOS icons.
+
+---
+
+## Requirements & Setup
+
+### 1. AI Chat Backend (`agy` CLI)
+The **ArchLinux AI Chat** popup inside the Dynamic Island Wannabe is **not a built-in LLM**—it is a lightweight frontend wrapper around the **`agy` (Antigravity) CLI** running in non-interactive print mode:
+- **Required:** You need `agy` installed and available in your `$PATH` (and authenticated) for the chat, `/resume`, `Go to agy Terminal`, and `New agy Terminal` features to work.
+- **Session History (`/resume`):** Reads recent conversation transcripts from `~/.gemini/antigravity-cli/brain/<session-id>/.system_generated/logs/transcript.jsonl`.
+- **Using a Different CLI (e.g. `gemini`, `claude`, `ollama`):**
+  - Edit `modules/topbar/DynamicIsland.qml` in `sendAgyChat()`, `expandAgyToTerminal()`, `focusAgyOrNew()`, and `newAgyTerminal()` to replace `agy -p` / `agy -c -p` with your preferred CLI's one-shot prompt flags.
+
+### 2. Running the Shell (Hyprland)
+1. Clone or copy this directory to `~/.config/quickshell/macos`.
+2. Make sure no competing D-Bus notification daemon (`swaync`, `dunst`, `mako`) is running if you want Quickshell's Notification Center to receive notifications:
+   ```bash
+   pkill -x swaync 2>/dev/null || true
+   ```
+3. Launch Quickshell with `MALLOC_ARENA_MAX=2` to keep glibc heap usage low:
+   ```bash
+   MALLOC_ARENA_MAX=2 quickshell -p ~/.config/quickshell/macos
+   ```
+4. *(Optional)* Add a Hyprland window rule (`~/.config/hypr/configs/windowrule.lua`) so the pinned AI Chat (`=` yellow button) floats cleanly across workspaces:
+   ```lua
+   hl.window_rule({
+       match = { title = "^ArchLinux AI Chat$" },
+       float = true,
+       center = true,
+       pin = true,
+       size = "396 440",
+       border_size = 0,
+       rounding = 20,
+       opacity = "1 1",
+   })
+   ```
+
